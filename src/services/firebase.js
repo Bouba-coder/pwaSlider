@@ -1,5 +1,7 @@
-import {initializeApp} from "firebase/app";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
     apiKey: "AIzaSyAg6n1n4PxoGQl4LxQ4C99j2Mi7OxxVRcg",
     authDomain: "pwa-firebase-e1679.firebaseapp.com",
@@ -11,4 +13,12 @@ const firebaseConfig = {
     measurementId: "G-PFSVY1P5EJ"
 };
 
-export const app = initializeApp(firebaseConfig);
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+export const auth = firebase.auth();
+
+const provider = new firebase.auth.GoogleAuthProvider();
+provider.setCustomParameters({ prompt: 'select_account' });
+
+export const signInWithGoogle = () => auth.signInWithPopup(provider);
