@@ -1,41 +1,61 @@
-import {signInWithGoogle} from "../../services/firebase";
+import { useState } from "react";
+import {signInWithEmailAndPassword, signInWithGithub, signInWithGoogle} from "../../services/firebase";
 
 const Login = () => {
+    const [values, setValues] = useState({username: '', password: ''});
+
+    const handleEmailInputChange = (e) => {
+        setValues({...values, username: e.target.value});
+    };
+
+    const handlePasswordInputChange = (e) => {
+        setValues({...values, password: e.target.value});
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        signInWithEmailAndPassword(values.username, values.password);
+    };
+
     return (
         <div className="flex h-screen bg-slate-200">
-            <div className="m-auto w-1/3">
-                <form className="bg-white shadow-md rounded-md px-8 pt-6 pb-8 mb-4">
+            <div className="m-auto w-1/3 space-y-2">
+                <form className="bg-white shadow-md rounded-md px-8 pt-6 pb-8 mb-2" onSubmit={handleSubmit}>
                     <h1 className="text-center text-xl mb-4">Login</h1>
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" for="username">
+                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
                             Username
                         </label>
                         <input
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             id="username"
                             type="text"
-                            placeholder="Username"/>
+                            placeholder="Username"
+                            value={values.username}
+                            onChange={handleEmailInputChange}/>
                     </div>
                     <div className="mb-6">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" for="password">
+                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
                             Password
                         </label>
                         <input
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             id="password"
                             type="password"
-                            placeholder="Password"/>
+                            placeholder="Password"
+                            value={values.password}
+                            onChange={handlePasswordInputChange}/>
                     </div>
                     <div className="flex items-center justify-between">
                         <button
                             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                            type="button">
+                            type="submit">
                             Sign In
                         </button>
                     </div>
                 </form>
                 <button className="w-full bg-white p-4 rounded" onClick={signInWithGoogle}>
-                    <div class="flex justify-center items-center space-x-4 mx-2">
+                    <div className="flex justify-center items-center space-x-4 mx-2">
                         <div>
                             <img
                                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/768px-Google_%22G%22_Logo.svg.png"
@@ -43,6 +63,16 @@ const Login = () => {
                                 alt="Google"/>
                         </div>
                         <div>Login with Google</div>
+                    </div>
+                </button>
+                <button className="w-full bg-black text-white p-4 rounded" onClick={signInWithGithub}>
+                    <div className="flex justify-center items-center space-x-4 mx-2">
+                        <div>
+                            <img src="https://icon-library.com/images/github-icon-white/github-icon-white-6.jpg"
+                                    className="w-10 h-10"
+                                    alt="Github"/>
+                        </div>
+                        <div>Login with Github</div>
                     </div>
                 </button>
             </div>
