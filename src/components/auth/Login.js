@@ -19,7 +19,7 @@ const Login = () => {
 
     return (
         <div className="flex h-screen bg-slate-200">
-            <div className="m-auto w-1/3 space-y-2">
+            <div className="m-auto lg:w-1/3 space-y-2 w-5/6">
                 <form className="bg-white shadow-md rounded-md px-8 pt-6 pb-8 mb-2" onSubmit={handleSubmit}>
                     <h1 className="text-center text-xl mb-4">Login</h1>
                     <div className="mb-4">
@@ -32,7 +32,8 @@ const Login = () => {
                             type="text"
                             placeholder="Username"
                             value={values.username}
-                            onChange={handleEmailInputChange}/>
+                            onChange={handleEmailInputChange}
+                            required/>
                     </div>
                     <div className="mb-6">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
@@ -44,7 +45,8 @@ const Login = () => {
                             type="password"
                             placeholder="Password"
                             value={values.password}
-                            onChange={handlePasswordInputChange}/>
+                            onChange={handlePasswordInputChange}
+                            required/>
                     </div>
                     <div className="flex items-center justify-between">
                         <button

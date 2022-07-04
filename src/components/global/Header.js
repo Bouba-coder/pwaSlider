@@ -26,7 +26,7 @@ const Header = ({user}) => {
 const Modals = ({user}) => {
     return (
         <div
-            className="absolute mr-12 mt-2 right-0 z-50 ring-2 ring-gray-100 bg-white rounded drop-shadow-md w-1/5 flex flex-col justify-center items-center p-4 space-y-4">
+            className="absolute mr-12 mt-2 right-0 z-50 ring-2 ring-gray-100 bg-white rounded drop-shadow-md lg:w-1/5 md:w-1/2 w-4/5 flex flex-col justify-center items-center p-4 space-y-4">
             <img className="rounded-full w-14 h-14" src={user.photoURL} alt=""/>
             <h2 className="text-sm font-medium">{user.displayName}</h2>
             <p className="text-sm font-medium text-gray-400 ">{user.email}</p>
