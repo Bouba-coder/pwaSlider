@@ -1,14 +1,21 @@
+import {
+  addDoc,
+  collection,
+} from "firebase/firestore";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
+  getUsers,
   signInWithEmailAndPassword,
   signInWithGithub,
   signInWithGoogle,
 } from "../../services/firebase";
 
-const Login = () => {
+const Login = ({ database, user }) => {
   const navigate = useNavigate();
   const [values, setValues] = useState({ username: "", password: "" });
+  const userRef = collection(database, "users");
 
   const handleEmailInputChange = (e) => {
     setValues({ ...values, username: e.target.value });
@@ -18,20 +25,48 @@ const Login = () => {
     setValues({ ...values, password: e.target.value });
   };
 
+  const addUser = async () => {
+    getUsers().then((users) => {
+      const userExist =
+        users?.filter((u) => u.email === user.email)?.length > 0;
+
+      if (!userExist) {
+        addDoc(userRef, {
+          uid: user.uid,
+          displayName: user.displayName,
+          email: user.email,
+          photoUrl: user.photoURL,
+        })
+          .then(() => {
+            toast.success("User Added");
+            navigate("/presentation");
+          })
+          .catch(() => {
+            toast.error("Cannot addUser");
+          });
+      } else {
+        navigate("/presentation");
+      }
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    signInWithEmailAndPassword(values.username, values.password);
-    navigate("/presentation");
+    signInWithEmailAndPassword(values.username, values.password).then(() => {
+      addUser();
+    });
   };
 
   const onClickSignInWithGoogle = () => {
-    signInWithGoogle();
-    navigate("/presentation");
+    signInWithGoogle().then(() => {
+      addUser();
+    });
   };
 
   const onClickSignInWithGithub = () => {
-    signInWithGithub();
-    navigate("/presentation");
+    signInWithGithub().then(() => {
+      addUser();
+    });
   };
 
   return (

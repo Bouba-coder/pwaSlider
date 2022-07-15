@@ -19,6 +19,7 @@
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "react-toastify": "^9.0.5",
+    "react-user-avatar": "^1.10.0",
     "reveal.js": "^4.3.1",
     "swiper": "^8.2.6",
     "upload-js": "^1.48.21",

@@ -1,50 +1,66 @@
-import { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import Login from "./screens/auth/login-page";
-import { Routes, Route, useNavigate } from "react-router-dom";
-import firebase from "firebase/compat/app";
-import { AppStateContextProvider } from "./context/app-state-context";
+import { Routes, Route } from "react-router-dom";
 import Presentation from "./screens/presentation-page";
 import EditSlide from "./screens/edit-slide-page";
-import { database } from "./services/firebase";
+import { auth, database } from "./services/firebase";
 import RevealSlides from "./screens/swiper/reveal-slides";
 import Header from "./components/Header";
 import Home from "./screens/home-page";
 import { useAppState } from "./context/app-state-context";
+import { ChatRoom } from "./components/chat-room";
 
 function App() {
-  const { appState, setAppState } = useAppState();
-  const { user } = appState;
+  const { initializeApp } = useAppState();
+  const [user, setUser] = useState(null);
+
+  const resetAppState = useCallback(
+    (e) => {
+      e.preventDefault();
+      initializeApp();
+    },
+    [initializeApp]
+  );
+
 
   useEffect(() => {
-    firebase.auth().onAuthStateChanged((user) => {
-      setAppState({ user: user });
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUser(user);
+      }
     });
-  }, [setAppState, user]);
+  })
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", resetAppState);
+    return () => {
+      window.removeEventListener("beforeunload", resetAppState);
+    };
+  }, [resetAppState]);
 
   return (
-    <AppStateContextProvider>
+    <div>
       <div>
-        <div>
-          <Header user={user} />
+        <Header user={user} />
 
-          <Routes>
-            <Route path="/login" element={<Login user={user} />} />
+        <Routes>
+          <Route path="/login" element={<Login database={database} user={user}/>} />
+          <Route path="/presentation" element={<Home database={database} user={user} />} />
+          <Route
+            path="/presentation/:id"
+            element={<Presentation database={database} user={user}/>}
+          />
             <Route
-              path="/presentation"
-              element={<Home user={user} database={database} />}
-            />
-            <Route
-              path="/presentation/:id"
-              element={<Presentation database={database} />}
-            />
-            <Route path="presentation/editDocs/:id" element={<EditSlide />} />
-            <Route path="presentation/reveal/:id" element={<RevealSlides />} />
-          </Routes>
-        </div>
+            path="/presentation/chat/:id"
+            element={<ChatRoom
+              database={database} user={user} />}
+          />
+          <Route path="presentation/editDocs/:id" element={<EditSlide user={user} />} />
+          <Route path="presentation/reveal/:id" element={<RevealSlides user={user} />} />
+        </Routes>
       </div>
-    </AppStateContextProvider>
+    </div>
   );
 }
-
 export default App;
