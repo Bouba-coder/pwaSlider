@@ -5,47 +5,44 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import defaultPresentationBkg from "../assets/images/slide_background.jpeg";
 import useWindowDimensions from "../components/useWindowDimentions";
 import PresentationModal from "../components/create-presentation-modal";
+import { useModal } from "../context/modal-context/modal-context";
+import ChatIcon from '@mui/icons-material/Chat';
+import { toast } from "react-toastify";
 
-export default function Home({ database }) {
+export default function Home({ database, user }) {
   let navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
   const [presentationList, setPresentationList] = useState([]);
-  const [presentationBkg, setPresentationBkg] = useState(null);
-  const [lightContent, setLightContent] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
   const screenDimensions = useWindowDimensions();
   const collectionRef = collection(database, "presentation");
   const slidesRef = collection(database, "slideList");
+  const modal = useModal();
 
-  const addPresentation = () => {
+  const addPresentation = (body) => {
     addDoc(collectionRef, {
-      id_user: "userid_cornelius",
+      id_user: user.uid,
       editors: [],
-      title: title,
-      content: content,
-      presentation_background: presentationBkg,
-      lightContent: lightContent,
+      title: body.title,
+      content: body.content,
+      presentation_background: body.presentationBkg,
+      lightContent: body.lightContent,
     })
       .then(() => {
-        alert("Presentation Added");
-        handleClose();
+        toast.success("Presentation Added");
+        modal.hideModal();
       })
       .catch(() => {
-        alert("Cannot add Presentation");
+       toast.error("Cannot add Presentation");
       });
   };
 
   useEffect(() => {
     const getData = () => {
       onSnapshot(collectionRef, (data) => {
-        setPresentationList(
-          data.docs?.map((doc) => {
-            return { ...doc.data(), id: doc.id };
-          }) || []
-        );
+        const list =   data.docs?.map((doc) => {
+          return { ...doc.data(), id: doc.id };
+        }) || []
+        setPresentationList(list.filter((_presentation) => _presentation.id_user === user.uid || 
+        _presentation.editors.filter((_editor) => _editor.uid === user.uid).length > 0));
       });
     };
     getData();
@@ -70,7 +67,7 @@ export default function Home({ database }) {
         }
         return acc;
       }, []);
-      navigate(`presentation/reveal/${presentation.id}`, {
+      navigate(`/presentation/reveal/${presentation.id}`, {
         state: {
           slideList: slides,
           presentation_background: presentation_background,
@@ -79,10 +76,26 @@ export default function Home({ database }) {
       });
     });
   };
+  const gotoChat = (presentation, presentation_background, styles) => {
+    navigate(`/presentation/chat/${presentation.id}`, {
+      state: {
+        presentation: presentation,
+        presentation_background: presentation_background,
+        styles: styles,
+      },
+    });
+  };
+  const openAddPresentation = () => {
+    modal.showModal(
+      <PresentationModal
+        addPresentation={addPresentation}
+      />
+    );
+  };
 
   return (
     <div className="docs-main">
-      <button className="add-docs" onClick={handleOpen}>
+      <button className="add-docs" onClick={openAddPresentation}>
         Add a Presentation
       </button>
 
@@ -90,16 +103,15 @@ export default function Home({ database }) {
         {presentationList.map((doc, index) => {
           const presentation_background =
             doc?.presentation_background || defaultPresentationBkg;
-          const styles =
-            doc?.lightContent === true
-              ? {
-                  primary: "text-white",
-                  secondary: "text-gray-100",
-                }
-              : {
-                  primary: "text-black",
-                  secondary: "text-gray-700",
-                };
+          const styles = doc?.lightContent
+            ? {
+                primary: "text-white",
+                secondary: "text-gray-100",
+              }
+            : {
+                primary: "text-black",
+                secondary: "text-gray-700",
+              };
 
           return (
             <div
@@ -114,21 +126,26 @@ export default function Home({ database }) {
               }}
             >
               <div
-                onClick={() => gotoReveal(doc, presentation_background, styles)}
-                className="w-8"
+               
+                className={`w-full  ${styles.primary} flex flex-row justify-between items-center`}
               >
+                <div  onClick={() => gotoReveal(doc, presentation_background, styles)}>
                 <VisibilityIcon />
+                </div>
+                <div  onClick={() => gotoChat(doc, presentation_background, styles)}>
+                <ChatIcon />
+                </div>
               </div>
               <div
                 onClick={() =>
                   gotoPresentation(doc, presentation_background, styles)
                 }
               >
-                <p className="font-bold text-xl py-2">
+                <p className={`font-bold text-xl py-2 ${styles.primary}`}>
                   {doc.title.charAt(0).toUpperCase() + doc.title.slice(1)}
                 </p>
                 <div
-                  className="text-xs text-gray-600"
+                  className={`text-xs ${styles.secondary}`}
                   dangerouslySetInnerHTML={{ __html: doc.content }}
                 />
               </div>
@@ -136,20 +153,6 @@ export default function Home({ database }) {
           );
         })}
       </div>
-
-      <PresentationModal
-        open={open}
-        setOpen={setOpen}
-        title={title}
-        setTitle={setTitle}
-        addPresentation={addPresentation}
-        content={content}
-        setContent={setContent}
-        setPresentationBkg={setPresentationBkg}
-        presentationBkg={presentationBkg}
-        setLightContent={setLightContent}
-        lightContent={lightContent}
-      />
     </div>
   );
 }

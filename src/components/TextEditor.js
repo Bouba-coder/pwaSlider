@@ -8,12 +8,12 @@ function TextEditor(props) {
 
   const apiPostNewsImage = useCallback(async (quill, position, e) => {
     const upload = new Upload({
-      apiKey: "public_12a1xmX7TnQrpmb2H36CLoF9R1US",
+      apiKey: process.env.REACT_APP_UPLOAD_API,
     });
     const uploadFile = upload.createFileInputHandler({
       onUploaded: ({ fileUrl, fileId }) => {
         console.log(`File uploaded! ${fileUrl}`);
-        console.log("url", fileUrl);
+
         // Remove placeholder image
         quill.deleteText(position, 1);
 
