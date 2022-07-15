@@ -4,12 +4,20 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
+import { AppStateContextProvider } from "./context/app-state-context";
+import { ModalProvider } from "./context/modal-context/modal-context";
+import { ToastContainer } from "react-toastify";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
+  <AppStateContextProvider>
+    <ModalProvider>
+      <BrowserRouter>
+        <App />
+        <ToastContainer />
+      </BrowserRouter>
+    </ModalProvider>
+  </AppStateContextProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

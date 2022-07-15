@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
 import CloseIcon from "@mui/icons-material/Close";
 import useWindowDimensions from "./useWindowDimentions";
 import TextEditor from "./TextEditor";
+import { useModal } from "../context/modal-context/modal-context";
 
 const style = {
   position: "absolute",
@@ -18,92 +18,82 @@ const style = {
 };
 
 export default function SlideModal({
-  open,
-  setOpen,
-  title,
-  setTitle,
-  description,
-  setDescription,
   addData,
 }) {
   const screenDimensions = useWindowDimensions();
-  const handleClose = () => setOpen(false);
+  const modal = useModal();
+  const { hideModal } = modal;
+  const [state, setState] = useState({
+    title: "",
+    description: "",
+  });
 
-  useEffect(() => {
-    console.log("title", title, "description", description);
-  }, [title, description]);
 
   const onChangeTitle = (event) => {
-    console.log("title changed", title, description);
-    setTitle(event?.target?.value);
+    setState({...state, title: event.target.value});
   };
 
   const onChangeDescription = (val) => {
-    console.log("description changed", title, description);
-    setDescription(val);
+    setState({...state, description: val});
   };
+
+  const addSlide = () => {
+    addData(state);
+    hideModal();
+  }
 
   return (
     <div>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+      <Box
+        sx={[
+          style,
+          {
+            width:
+              screenDimensions.width < 600 ? screenDimensions.width - 20 : 420,
+          },
+        ]}
       >
-        <Box
-          sx={[
-            style,
-            {
-              width:
-                screenDimensions.width < 600
-                  ? screenDimensions.width - 20
-                  : 420,
-            },
-          ]}
+        <div
+          style={{
+            marginBottom: 30,
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "flex-end",
+          }}
+          onClick={hideModal}
         >
-          <div
-            style={{
-              marginBottom: 30,
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "flex-end",
-            }}
-            onClick={handleClose}
-          >
-            <CloseIcon />
-          </div>
+          <CloseIcon />
+        </div>
 
-          <input
-            placeholder="Add the Title"
-            className="add-input"
-            onChange={onChangeTitle}
-            value={title}
-            style={{ marginBottom: 20 }}
+        <input
+          placeholder="Add the Title"
+          className="add-input"
+          onChange={onChangeTitle}
+          value={state.title}
+          style={{ marginBottom: 20 }}
+        />
+        <div
+          className="createSlide-inner overflow-y-scroll"
+          style={{
+            height:
+              screenDimensions.height < 800
+                ? 0.6 * screenDimensions.height
+                : 550,
+          }}
+        >
+          <TextEditor
+            description={state.description}
+            onChange={onChangeDescription}
+            handleImage
           />
-          <div
-            className="createSlide-inner overflow-y-scroll"
-            style={{
-              height:
-                screenDimensions.height < 800
-                  ? 0.6 * screenDimensions.height
-                  : 550,
-            }}
-          >
-            <TextEditor
-              description={description}
-              onChange={onChangeDescription}
-              handleImage
-            />
-          </div>
+        </div>
 
-          <div className="button-container">
-            <button className="add-docs" onClick={addData}>
-              Add
-            </button>
-          </div>
-        </Box>
-      </Modal>
+        <div className="button-container">
+          <button className="add-docs" onClick={addSlide}>
+            Add
+          </button>
+        </div>
+      </Box>
     </div>
   );
 }

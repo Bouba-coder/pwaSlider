@@ -1,6 +1,6 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
-import { getFirestore } from "firebase/firestore";
+import { addDoc, collection, getFirestore, onSnapshot, orderBy, query, serverTimestamp } from "firebase/firestore";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -32,3 +32,47 @@ export const signInWithEmailAndPassword = (email, password) =>
   auth.signInWithEmailAndPassword(email, password);
 
 export const database = getFirestore(app);
+
+export const getUsers = () => {
+  const userRef = collection(database, "users");
+  return new Promise((resolve, reject) => {
+    onSnapshot(userRef, (result) => {
+      const data =
+        result.docs.reduce((acc, doc) => {
+          return [...acc, { ...doc.data() }];
+        }, []) || [];
+      resolve(data);
+    });
+  });
+};
+
+
+export async function sendMessage(roomId, user, text) {
+  try {
+      await addDoc(collection(database, 'chat-rooms', roomId, 'messages'), {
+          uid: user.uid,
+          displayName: user.displayName,
+          text: text.trim(),
+          timestamp: serverTimestamp(),
+      });
+  } catch (error) {
+      console.error(error);
+  }
+}
+
+export function getMessages(roomId, callback) {
+  return onSnapshot(
+      query(
+          collection(database, 'chat-rooms', roomId, 'messages'),
+          orderBy('timestamp', 'asc')
+      ),
+      (querySnapshot) => {
+          const messages = querySnapshot.docs.map((x) => ({
+              id: x.id,
+              ...x.data(),
+          }));
+
+          callback(messages);
+      }
+  );
+}

@@ -20,12 +20,12 @@ const RevealSlides = () => {
     <>
       <Swiper
         style={{
-          minHeight: 0.7 * dimensions.height,
-          width: dimensions.width < 600 ? dimensions.width - 20 : 398,
+          height: dimensions.height,
+          //width: dimensions.width < 600 ? dimensions.width - 20 : 398,
         }}
         navigation={true}
         modules={[Navigation]}
-        className="mySwiper"
+        className="mySwiper  h-screen -mt-12"
       >
         {slideList.reverse().map((slide, index) => {
           return (
@@ -34,17 +34,20 @@ const RevealSlides = () => {
               style={{
                 backgroundImage: `url(${presentation_background})`,
               }}
-              className="mb-12"
+              className="mb-12 h-screen"
             >
               <div
+                style={{
+                  height: 0.85*dimensions.height,
+                }}
                 className={`flex flex-col self-start ${styles?.primary} px-2 py-2  pv-2`}
               >
-                <div className="flex justify-center capitalize my-16">
-                  <p className="text-4xl">{slide.title}</p>
+                <div className="flex justify-center capitalize mt-16">
+                  <p className="text-5xl">{slide.title}</p>
                 </div>
 
                 <div
-                  className={`flex flex-col text-left ${styles?.secondary}`}
+                  className={`flex flex-1  flex-col ${dimensions.width > 600 ? 'text-2xl mx-24' : 'text-lg mx-12'} justify-center align-center  ${styles?.secondary}`}
                   dangerouslySetInnerHTML={{ __html: slide.description }}
                 />
               </div>

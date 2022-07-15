@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "react-quill/dist/quill.snow.css";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { updateDoc, collection, doc } from "firebase/firestore";
 import useWindowDimensions from "../components/useWindowDimentions";
 import TextEditor from "../components/TextEditor";
 import { database } from "../services/firebase";
 
-export default function EditSlide({ slide }) {
+export default function EditSlide({ slide , styles}) {
   const screenDimensions = useWindowDimensions();
   const collectionRef = collection(database, "slideList");
   const [slideId, setSlideId] = useState(slide?.id || "");
@@ -69,8 +68,6 @@ export default function EditSlide({ slide }) {
       }}
     >
       <div className="editDocs-main">
-        <ToastContainer />
-
         <div>
           <input
             placeholder="Add the Title"
@@ -88,7 +85,7 @@ export default function EditSlide({ slide }) {
         </div>
 
         <div
-          className="editDocs-inner"
+          className={`editDocs-inner ${styles?.primary}`}
           style={{
             width:
               screenDimensions.width < 600 ? screenDimensions.width - 20 : 420,

@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { addDoc, collection, onSnapshot } from "firebase/firestore";
+import { addDoc, collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useLocation } from "react-router-dom";
 import SlideModal from "../components/create-slide-modal";
 import EditSlide from "./edit-slide-page";
 import { useAppState } from "../context/app-state-context";
 import useWindowDimensions from "../components/useWindowDimentions";
+import InviteFriendsModal from "../components/invite-friends-modal";
+import { useModal } from "../context/modal-context/modal-context";
+import { toast } from "react-toastify";
+
 var truncate = require("html-truncate");
 
 const defaultMsg = {
@@ -13,33 +17,30 @@ const defaultMsg = {
   id: ".",
 };
 
-export default function Presentation({ database }) {
+export default function Presentation({ database, user }) {
   const { appState, setAppState } = useAppState();
   const { activeSlide } = appState;
-  const [open, setOpen] = React.useState(false);
   const [slideList, setSlideList] = useState([]);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
   const location = useLocation();
-  const { presentation, presentation_background } = location.state;
+  const { presentation, presentation_background, styles} = location.state;
   const screenDimensions = useWindowDimensions();
   const isMobile = screenDimensions.width < 600;
   const collectionRef = collection(database, "slideList");
+  const presentationRef = collection(database, "presentation");
+  const modal = useModal();
 
-  const addData = () => {
+  const addData = (state) => {
     addDoc(collectionRef, {
-      title: title,
-      description: description,
+      title: state.title,
+      description: state.description,
       presentation_id: presentation.id,
     })
       .then(() => {
-        //alert("Data Added");
-        handleClose();
+        toast.success("Slide Added");
+        modal.hideModal();
       })
       .catch(() => {
-        alert("Cannot add data");
+        toast.error("Cannot add data");
       });
   };
 
@@ -116,6 +117,7 @@ export default function Presentation({ database }) {
         >
           <div className=" mt-4">
             <EditSlide
+              styles={styles}
               presentation_background={presentation_background}
               slide={activeSlide || slideList?.[0] || defaultMsg}
             />
@@ -171,28 +173,60 @@ export default function Presentation({ database }) {
               backgroundImage: `url(${presentation_background})`,
             }}
           >
-            <EditSlide slide={activeSlide || slideList?.[0] || defaultMsg} />
+            <EditSlide styles={styles} slide={activeSlide || slideList?.[0] || defaultMsg} />
           </div>
         </div>
       </div>
     );
   };
 
+  const updateEditors = (users) => {
+    const document = doc(presentationRef, presentation.id);
+    updateDoc(document, {
+      ...presentation,
+      editors: users,
+    })
+      .then(() => {
+        toast.success("Editors added successfully");
+      })
+      .catch(() => {
+        alert("Cannot add data");
+      });
+  };
+  const openInvite = () => {
+    const canEdit = user?.uid === presentation.id_user;
+    if(canEdit){
+    modal.showModal(<InviteFriendsModal updateEditors={updateEditors} presentation={presentation}/>);
+    }else{
+      toast.success("Only the creator of the presentation can add new editors");
+    }
+  };
+
+  const addSlide = () => {
+    modal.showModal(
+      <SlideModal
+        addData={addData}
+      />
+    );
+  };
   return (
     <div className="docs-main">
-      <button className="add-docs mb-8" onClick={handleOpen}>
-        Add a Slide
-      </button>
+      <div
+        className={`flex ${
+          isMobile ? "flex-col items-center" : "flex-row justify-center "
+        }`}
+      >
+        <button className="add-docs mb-8" onClick={addSlide}>
+          Add a Slide
+        </button>
+        <button
+          className={`invite mb-8 ${isMobile ? "" : "ml-8"}`}
+          onClick={openInvite}
+        >
+          Invite a Friend
+        </button>
+      </div>
       {slideList.length > 0 && (isMobile ? renderMobile() : renderDesktop())}
-      <SlideModal
-        open={open}
-        setOpen={setOpen}
-        title={title}
-        setTitle={setTitle}
-        addData={addData}
-        description={description}
-        setDescription={setDescription}
-      />
     </div>
   );
 }
