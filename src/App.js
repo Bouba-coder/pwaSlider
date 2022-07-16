@@ -45,6 +45,7 @@ function App() {
         <Header user={user} />
 
         <Routes>
+        <Route path="/" element={<Login database={database} user={user}/>} />
           <Route path="/login" element={<Login database={database} user={user}/>} />
           <Route path="/presentation" element={<Home database={database} user={user} />} />
           <Route
