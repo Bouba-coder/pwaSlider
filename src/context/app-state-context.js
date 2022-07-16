@@ -4,6 +4,8 @@ import storage from "./storage";
 const AppStateContextDefault = {
   appState: {
     activeSlide: null,
+    user: null,
+    isLoggedIn: false,
   },
   setAppState: () => null,
   initializeApp: () => null,
@@ -31,6 +33,7 @@ export const AppStateContextProvider = ({ children }) => {
     //do all the initialisation here and set the context
     const state = await storage.getItem("appState");
     setState(state);
+    return state;
   };
 
   useEffect(() => {

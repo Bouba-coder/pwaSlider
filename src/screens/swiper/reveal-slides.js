@@ -15,7 +15,7 @@ const RevealSlides = () => {
   const location = useLocation();
   const dimensions = useWindowDimensions();
   const { slideList, presentation_background, styles } = location.state;
-  console.log("coming slides", slideList, presentation_background);
+
   return (
     <>
       <Swiper

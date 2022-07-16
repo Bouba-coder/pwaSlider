@@ -105,10 +105,12 @@ export default function Home({ database, user }) {
             doc?.presentation_background || defaultPresentationBkg;
           const styles = doc?.lightContent
             ? {
+                isLight: true,
                 primary: "text-white",
                 secondary: "text-gray-100",
               }
             : {
+                isLight: false,
                 primary: "text-black",
                 secondary: "text-gray-700",
               };
