@@ -4,14 +4,8 @@ import "./modal.css";
 
 const defaultValues = {
   visible: false,
-  showModal: () => {
-    // eslint-disable-next-line no-console
-    console.log("showModal not implemented");
-  },
-  hideModal: () => {
-    // eslint-disable-next-line no-console
-    console.log("hideModal not implemented");
-  },
+  showModal: () => {},
+  hideModal: () => {},
   modalContent: <div />,
 };
 
@@ -24,7 +18,6 @@ export const useModal = () => {
 
 function Modal() {
   const { modalContent, visible } = useContext(ModalContext);
-  console.log("came here2", visible);
   return visible
     ? ReactDOM.createPortal(
         <div className="modal-overlay">{modalContent}</div>,
