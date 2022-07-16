@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import Login from "./screens/auth/login-page";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Presentation from "./screens/presentation-page";
 import EditSlide from "./screens/edit-slide-page";
 import { auth, database } from "./services/firebase";
@@ -45,7 +45,7 @@ function App() {
         <Header user={user} />
 
         <Routes>
-        <Route path="/" element={<Login database={database} user={user}/>} />
+          
           <Route path="/login" element={<Login database={database} user={user}/>} />
           <Route path="/presentation" element={<Home database={database} user={user} />} />
           <Route
@@ -59,6 +59,7 @@ function App() {
           />
           <Route path="presentation/editDocs/:id" element={<EditSlide user={user} />} />
           <Route path="presentation/reveal/:id" element={<RevealSlides user={user} />} />
+  
         </Routes>
       </div>
     </div>
