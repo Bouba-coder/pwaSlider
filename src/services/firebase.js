@@ -1,7 +1,9 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import { addDoc, collection, getFirestore, onSnapshot, orderBy, query, serverTimestamp } from "firebase/firestore";
-
+import { enableIndexedDbPersistence } from "firebase/firestore"; 
+import { getDatabase, ref, onValue } from "firebase/database";
+//import { notification } from "antd";
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -16,22 +18,58 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
-
 export const auth = firebase.auth();
 
+//connection 
 const provider = new firebase.auth.GoogleAuthProvider();
 provider.setCustomParameters({ prompt: "select_account" });
-
 const providerGithub = new firebase.auth.GithubAuthProvider();
-
+//signing with platformeAccount
 export const signInWithGoogle = () => auth.signInWithPopup(provider);
-
 export const signInWithGithub = () => auth.signInWithPopup(providerGithub);
-
 export const signInWithEmailAndPassword = (email, password) =>
   auth.signInWithEmailAndPassword(email, password);
 
 export const database = getFirestore(app);
+
+//enable persistance 
+const getDb = getDatabase(app);
+const connectedRef = ref(getDb, ".info/connected");
+export const getConnectStatus = () => {
+  onValue(connectedRef, (snap) => {
+    if (snap.val() === false) {
+     return false;
+    } else{
+      return true;
+    }
+  });
+}
+onValue(connectedRef, (snap) => {
+  if (snap.val() === false) {
+    enableIndexedDbPersistence(database).catch(err => {
+      console.log(err.code);
+      //handleError(err.code);
+      return database;
+    });
+  } 
+});
+
+
+//getError
+/*const handleError = error => {
+  if (error === "failed-precondition") {
+    notification.open({
+      message: "Error",
+      description:
+        "Multiple tabs open, offline data only works in one tab at a a time."
+    });
+  } else if (error === "unimplemented") {
+    notification.open({
+      message: "Error",
+      description: "Cannot save offline on this browser."
+    });
+  }
+};*/
 
 export const getUsers = () => {
   const userRef = collection(database, "users");
