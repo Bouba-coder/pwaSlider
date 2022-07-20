@@ -3,6 +3,7 @@ import React, {  useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserAvatar from "react-user-avatar";
 import CloseIcon from "@mui/icons-material/Close";
+import { useAppState } from "../context/app-state-context";
 
 const Header = ({user}) => {
   const [modal, isModal] = useState(false);
@@ -33,9 +34,10 @@ const Header = ({user}) => {
 };
 
 const Modals = ({ user, navigate, isModal }) => {
-
+  const {setAppState} = useAppState();
   const signOut = () => {
     auth.signOut();
+    setAppState({user: null, isLoggedIn: false});
     isModal(false);
     navigate("/login");
   };

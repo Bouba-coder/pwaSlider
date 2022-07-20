@@ -8,6 +8,7 @@ import PresentationModal from "../components/create-presentation-modal";
 import { useModal } from "../context/modal-context/modal-context";
 import ChatIcon from '@mui/icons-material/Chat';
 import { toast } from "react-toastify";
+import {getConnectStatus} from "../services/firebase";
 
 export default function Home({ database, user }) {
   let navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function Home({ database, user }) {
   const modal = useModal();
 
   const addPresentation = (body) => {
+
     addDoc(collectionRef, {
       id_user: user.uid,
       editors: [],
@@ -26,7 +28,13 @@ export default function Home({ database, user }) {
       presentation_background: body.presentationBkg,
       lightContent: body.lightContent,
     })
-      .then(() => {
+      .then(() => {    
+//offline 
+      if(getConnectStatus === false){
+        toast.success("Presentation Added");
+        modal.hideModal();
+      }
+    //onLine
         toast.success("Presentation Added");
         modal.hideModal();
       })
@@ -105,10 +113,12 @@ export default function Home({ database, user }) {
             doc?.presentation_background || defaultPresentationBkg;
           const styles = doc?.lightContent
             ? {
+                isLight: true,
                 primary: "text-white",
                 secondary: "text-gray-100",
               }
             : {
+                isLight: false,
                 primary: "text-black",
                 secondary: "text-gray-700",
               };

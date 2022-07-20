@@ -5,6 +5,7 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useAppState } from "../../context/app-state-context";
 import {
   getUsers,
   signInWithEmailAndPassword,
@@ -12,8 +13,9 @@ import {
   signInWithGoogle,
 } from "../../services/firebase";
 
-const Login = ({ database, user }) => {
+const Login = ({ database }) => {
   const navigate = useNavigate();
+  const {setAppState} = useAppState()
   const [values, setValues] = useState({ username: "", password: "" });
   const userRef = collection(database, "users");
 
@@ -25,7 +27,7 @@ const Login = ({ database, user }) => {
     setValues({ ...values, password: e.target.value });
   };
 
-  const addUser = async () => {
+  const addUser = async (user) => {
     getUsers().then((users) => {
       const userExist =
         users?.filter((u) => u.email === user.email)?.length > 0;
@@ -39,33 +41,39 @@ const Login = ({ database, user }) => {
         })
           .then(() => {
             toast.success("User Added");
+            setAppState({user: user, isLoggedIn: true});
             navigate("/presentation");
           })
           .catch(() => {
             toast.error("Cannot addUser");
           });
       } else {
+        setAppState({user: user, isLoggedIn: true});
         navigate("/presentation");
       }
     });
+   
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    signInWithEmailAndPassword(values.username, values.password).then(() => {
-      addUser();
+    signInWithEmailAndPassword(values.username, values.password).then((data) => {
+      const user = data.user;
+      addUser({uid: user.uid, displayName: user.displayName, email: user.email, photoURL: user.photoURL});
     });
   };
 
   const onClickSignInWithGoogle = () => {
-    signInWithGoogle().then(() => {
-      addUser();
+    signInWithGoogle().then((data) => {
+      const user = data.user;
+      addUser({uid: user.uid, displayName: user.displayName, email: user.email, photoURL: user.photoURL});
     });
   };
 
   const onClickSignInWithGithub = () => {
-    signInWithGithub().then(() => {
-      addUser();
+    signInWithGithub().then((data) => {
+      const user = data.user;
+      addUser({uid: user.uid, displayName: user.displayName, email: user.email, photoURL: user.photoURL});
     });
   };
 
