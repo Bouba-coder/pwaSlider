@@ -27,7 +27,11 @@ const  ChatRoom = ({user}) => {
            <h2 className={`${styles?.primary} ml-4`}>{presentation.title}</h2>
            </div>
             <div className="flex flex-col flex-1 w-full">
-                <MessageList user={user} roomId={presentation.id} styles={styles} />
+           <div className='overflow-y-scroll' style={{height: 0.6 * dimensions.height}}>
+           <MessageList user={user} roomId={presentation.id} styles={styles} />
+           </div>
+   
+              
                 <div className={`fixed ${dimensions.width < 600 ? 'bottom-16' :'bottom-8'}`} style={{ width: dimensions.width < 600 ? dimensions.width - 20 : 398}}>
                  <MessageInput  user={user} roomId={presentation.id} styles={styles} />
                 </div>
