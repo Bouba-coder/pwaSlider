@@ -1,5 +1,6 @@
 import React from 'react';
 import { useMessages } from '../../hooks/useMessages';
+import useWindowDimensions from '../useWindowDimentions';
 import './styles.css';
 
 function MessageList({ roomId, styles, user }) {

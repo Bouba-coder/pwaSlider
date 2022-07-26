@@ -20,7 +20,7 @@ const Header = ({user}) => {
           <div>
             {user && (
               <button onClick={() => isModal((current) => !current)}>
-                 <UserAvatar size="48" name={user.displayName.toUpperCase()} /*src={user?.photoURL} */ />
+                 <UserAvatar size="48" name={user?.displayName?.toUpperCase() || "PWA SLIDER"} /*src={user?.photoURL} */ />
               </button>
             )}
           </div>
