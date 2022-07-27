@@ -23,7 +23,8 @@
     "react-user-avatar": "^1.10.0",
     "reveal.js": "^4.3.1",
     "upload-js": "^1.48.21",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "vite-plugin-minify": "^1.4.3"
   },
   "devDependencies": {
     "@tailwindcss/line-clamp": "^0.4.0",
