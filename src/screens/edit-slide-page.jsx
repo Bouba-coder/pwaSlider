@@ -5,14 +5,15 @@ import { updateDoc, collection, doc } from "firebase/firestore";
 import useWindowDimensions from "../components/useWindowDimentions";
 import TextEditor from "../components/TextEditor";
 import { database } from "../services/firebase";
+import CheckIcon from '@mui/icons-material/Check';
 
 export default function EditSlide({ slide , styles}) {
+  console.log("slide bro", slide);
   const screenDimensions = useWindowDimensions();
   const collectionRef = collection(database, "slideList");
   const [slideId, setSlideId] = useState(slide?.id || "");
   const [title, setTitle] = useState(slide?.title || "");
   const [description, setDescription] = useState(slide?.description || "");
-  const [isEdited, setIsEdited] = useState(false);
   const document = doc(collectionRef, slideId);
 
   useEffect(() => {
@@ -28,34 +29,28 @@ export default function EditSlide({ slide , styles}) {
 
   const getQuillData = (value) => {
     setDescription(value);
-    setIsEdited(true);
   };
 
-  useEffect(() => {
-    if (isEdited && description && title && slideId.length > 0) {
-      const updateSlide = () => {
-        setIsEdited(false);
 
-        updateDoc(document, {
-          description: description,
-          title: title,
+  const updateSlide = () => {
+    if (description && title && slideId.length > 0) {
+      updateDoc(document, {
+        description: description,
+        title: title,
+      })
+        .then(() => {
+          toast.success("Document Saved");
         })
-          .then(() => {
-            console.log("Document Saved");
-          })
-          .catch(() => {
-            /*toast.error("Cannot Save Document", {
-              autoClose: 2000,
-            });*/
+        .catch(() => {
+          toast.error("Cannot Save Document", {
+            autoClose: 2000,
           });
-      };
-      updateSlide();
+        });
     }
-  }, [description, document, isEdited, slideId, title]);
-
+ 
+  };
   const onChangeTitle = (event) => {
     setTitle(event.target.value);
-    setIsEdited(true);
   };
 
   return (
@@ -68,6 +63,11 @@ export default function EditSlide({ slide , styles}) {
       }}
     >
       <div className="editDocs-main">
+        <div className={`flex flex-row mt-2 mb-4  w-full items-center justify-end ${styles?.secondary}`}>
+          <div onClick={updateSlide}>
+          <CheckIcon />{"Save"}
+          </div>
+        </div>
         <div>
           <input
             placeholder="Add the Title"
@@ -85,7 +85,7 @@ export default function EditSlide({ slide , styles}) {
         </div>
 
         <div
-          className={`editDocs-inner ${styles?.primary}`}
+          className={`editDocs-inner overflow-y-scroll ${styles?.primary}`}
           style={{
             width:
               screenDimensions.width < 600 ? screenDimensions.width - 20 : 420,

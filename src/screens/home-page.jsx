@@ -17,9 +17,10 @@ export default function Home({ database, user }) {
   const collectionRef = collection(database, "presentation");
   const slidesRef = collection(database, "slideList");
   const modal = useModal();
+  const [isLoading, setLoading] = useState(false);
 
   const addPresentation = (body) => {
-
+    setLoading(true);
     addDoc(collectionRef, {
       id_user: user.uid,
       editors: [],
@@ -29,16 +30,13 @@ export default function Home({ database, user }) {
       lightContent: body.lightContent,
     })
       .then(() => {    
-//offline 
-      if(getConnectStatus === false){
-        toast.success("Presentation Added");
-        modal.hideModal();
-      }
-    //onLine
+
+        setLoading(false);
         toast.success("Presentation Added");
         modal.hideModal();
       })
       .catch(() => {
+       setLoading(false);
        toast.error("Cannot add Presentation");
       });
   };
@@ -49,11 +47,12 @@ export default function Home({ database, user }) {
         const list =   data.docs?.map((doc) => {
           return { ...doc.data(), id: doc.id };
         }) || []
-        setPresentationList(list.filter((_presentation) => _presentation.id_user === user.uid || 
-        _presentation.editors.filter((_editor) => _editor.uid === user.uid).length > 0));
+        setPresentationList(list.filter((_presentation) => _presentation?.id_user === user?.uid || 
+        _presentation.editors.filter((_editor) => _editor?.uid === user?.uid).length > 0));
       });
     };
     getData();
+
   }, [collectionRef]);
 
   const gotoPresentation = (presentation, presentation_background, styles) => {
@@ -97,6 +96,7 @@ export default function Home({ database, user }) {
     modal.showModal(
       <PresentationModal
         addPresentation={addPresentation}
+        isLoading={isLoading}
       />
     );
   };

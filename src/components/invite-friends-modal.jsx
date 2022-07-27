@@ -67,8 +67,10 @@ export default function InviteFriendsModal({ updateEditors, presentation }) {
           {
             width:
               screenDimensions.width < 600 ? screenDimensions.width - 20 : 420,
+              height:  0.8 * screenDimensions.height,
           },
         ]}
+        className="overflow-y-scroll"
       >
         <div
           style={{

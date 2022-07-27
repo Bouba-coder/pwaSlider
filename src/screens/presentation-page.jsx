@@ -8,8 +8,7 @@ import useWindowDimensions from "../components/useWindowDimentions";
 import InviteFriendsModal from "../components/invite-friends-modal";
 import { useModal } from "../context/modal-context/modal-context";
 import { toast } from "react-toastify";
-
-var truncate = require("html-truncate");
+import truncate  from "html-truncate"
 
 const defaultMsg = {
   title: ".",
@@ -98,7 +97,7 @@ export default function Presentation({ database, user }) {
                     className="text-gray-500"
                     style={{ maxHeight: 100 }}
                     dangerouslySetInnerHTML={{
-                      __html: truncate(doc.description, 100),
+                      __html: truncate(doc.description, 50),
                     }}
                   />
                 </div>
@@ -151,14 +150,14 @@ export default function Presentation({ database, user }) {
                     }}
                     onClick={() => setActiveSlide(doc)}
                   >
-                    <p className="font-bold text-xl py-2">
+                    <p className="font-bold text-xl py-2 line-clamp-2">
                       {doc.title.charAt(0).toUpperCase() + doc.title.slice(1)}
                     </p>
                     <div
                       className="text-gray-500"
                       style={{ maxHeight: 100 }}
                       dangerouslySetInnerHTML={{
-                        __html: truncate(doc.description, 100),
+                        __html: truncate(doc.description, 50),
                       }}
                     />
                   </div>
