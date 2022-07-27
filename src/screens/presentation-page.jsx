@@ -77,7 +77,7 @@ export default function Presentation({ database, user }) {
                 className={`h-full p-2 m-2 ${
                   activeSlide?.id === doc.id ||
                   (slideList?.[0]?.id === doc.id && !activeSlide)
-                    ? "bg-teal-300"
+                    ? "bg-teal-200"
                     : ""
                 }`}
                 style={{
@@ -90,7 +90,7 @@ export default function Presentation({ database, user }) {
                   className="grid-child bg-white h-40 "
                   onClick={() => setActiveSlide(doc)}
                 >
-                  <p className="font-bold text-xl py-2">
+                  <p className="font-bold text-xl py-2 line-clamp-2">
                     {doc.title.charAt(0).toUpperCase() + doc.title.slice(1)}
                   </p>
                   <div
@@ -138,7 +138,7 @@ export default function Presentation({ database, user }) {
                   className={`p-2 mt-2 ${
                     activeSlide?.id === doc.id ||
                     (slideList?.[0]?.id === doc.id && !activeSlide)
-                      ? "bg-teal-300"
+                      ? "bg-teal-200"
                       : ""
                   }`}
                 >
