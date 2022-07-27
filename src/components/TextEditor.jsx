@@ -8,7 +8,7 @@ function TextEditor(props) {
 
   const apiPostNewsImage = useCallback(async (quill, position, e) => {
     const upload = new Upload({
-      apiKey: process.env.REACT_APP_UPLOAD_API,
+      apiKey: import.meta.env.VITE_UPLOAD_API,
     });
     const uploadFile = upload.createFileInputHandler({
       onUploaded: ({ fileUrl, fileId }) => {
@@ -71,7 +71,7 @@ function TextEditor(props) {
   return (
     <ReactQuill
       ref={quillRef}
-      className="react-quill"
+      className="react-quill text-xs"
       value={description}
       onChange={onChange}
       placeholder="Add your description here"

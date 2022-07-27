@@ -6,6 +6,8 @@ import { Upload } from "upload-js";
 import AddIcon from "@mui/icons-material/Add";
 import useWindowDimensions from "./useWindowDimentions";
 import { useModal } from "../context/modal-context/modal-context";
+import { useLoader } from "../context/loader-context";
+import Loading from "./loader/loading";
 
 const style = {
   position: "absolute",
@@ -20,11 +22,13 @@ const style = {
 
 export default function PresentationModal({
   addPresentation,
+  isLoading,
 }) {
   const screenDimensions = useWindowDimensions();
   const inputRef = useRef();
-  var upload = new Upload({ apiKey: process.env.REACT_APP_UPLOAD_API });
+  var upload = new Upload({ apiKey: import.meta.env.VITE_UPLOAD_API });
   const modal = useModal();
+  const {loading, toggleLoad} = useLoader()
   const [state, setState] = useState({
     title: "",
     content: "",
@@ -35,12 +39,14 @@ export default function PresentationModal({
 
   const uploadFile = upload.createFileInputHandler({
     onUploaded: ({ fileUrl, fileId }) => {
+      toggleLoad()
       setState({...state, presentationBkg: fileUrl});
     },
   });
 
   const onUpload = (e) => {
     if (e.target.files && e.target.files[0]) {
+      toggleLoad();
       uploadFile(e);
     }
   };
@@ -59,6 +65,11 @@ export default function PresentationModal({
     setState({...state, lightContent: !state.lightContent});
   }
 
+  const _addPresentation = () => {
+    modal.hideModal();
+    addPresentation(state);
+  }
+
   return (
     <div>
       <Box
@@ -67,8 +78,10 @@ export default function PresentationModal({
           {
             width:
               screenDimensions.width < 600 ? screenDimensions.width - 20 : 420,
+              height:  0.9 * screenDimensions.height,
           },
         ]}
+        className="overflow-y-scroll"
       >
         <div
           style={{
@@ -131,21 +144,22 @@ export default function PresentationModal({
               <input
                 type="radio"
                 value={state.lightContent}
-                checked={state.lightContent}
+              
                 name="dark-content"
                 className="text-red-500 mr-1"
               />
               Light Content
             </label>
           </div>
-          {state.presentationBkg && (
-            <img src={state.presentationBkg} alt="presentation background" />
+          {loading && <div className="h-48"><Loading /></div>}
+          {!loading && state.presentationBkg && (
+            <img className="h-48" src={state.presentationBkg} alt="presentation background" />
           )}
         </div>
 
         <div className="button-container">
-          <button className="add-docs" onClick={() => addPresentation(state)}>
-            Add
+          <button className="add-docs" onClick={() => _addPresentation()}>
+            {isLoading ? <Loading size={25}/> : "Add"}
           </button>
         </div>
       </Box>

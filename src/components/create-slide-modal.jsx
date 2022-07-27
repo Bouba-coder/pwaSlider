@@ -50,8 +50,10 @@ export default function SlideModal({
           {
             width:
               screenDimensions.width < 600 ? screenDimensions.width - 20 : 420,
+              height:  0.92 * screenDimensions.height,
           },
         ]}
+        className="overflow-y-scroll"
       >
         <div
           style={{
