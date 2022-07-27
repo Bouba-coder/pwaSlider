@@ -2,8 +2,8 @@
     "apps": [
         {
             "name": "my-app",
-            "script": "npm",
-            "args" : "dev"
+            "script": "yarn",
+            "args" : "dev --host"
         }
     ]
 }
